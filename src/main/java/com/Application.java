@@ -14,7 +14,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @RequestMapping("/")
+    @RequestMapping("/api/auth/")
     public String index() {
         return "Greetings from Spring Boot!";
     }

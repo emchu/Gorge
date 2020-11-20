@@ -9,11 +9,9 @@ import lombok.Setter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 @JsonPropertyOrder({"password","newPassword", "newPassword2" })
 public class ChangePassword {
-
-//    @Getter @Setter
-//    private String email;
 
     @Getter @Setter
     private String password;
@@ -25,17 +23,15 @@ public class ChangePassword {
     private String newPassword2;
 
     @JsonCreator
-    public ChangePassword(
-//            @JsonProperty("email") String email,
-                          @JsonProperty("password") String password,
+    public ChangePassword(@JsonProperty("password") String password,
                           @JsonProperty("newPassword") String newPassword,
                           @JsonProperty("newPassword2") String newPassword2) {
 
         this.password = password;
-//        this.email = email;
         this.newPassword = newPassword;
         this.newPassword2 = newPassword2;
     }
+
     public ChangePassword(){}
 
     public boolean checkNewPassword() {
@@ -69,5 +65,4 @@ public class ChangePassword {
 
         return match.find();
     }
-
 }

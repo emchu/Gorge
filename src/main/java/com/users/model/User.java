@@ -10,7 +10,7 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "user", uniqueConstraints = {
+@Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "email"
         })
@@ -18,8 +18,7 @@ import java.util.Set;
 public class User {
 
     @Column(name = "ID_USER", nullable = false)
-    @Getter
-    @Setter
+    @Getter @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

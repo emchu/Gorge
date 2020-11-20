@@ -1,6 +1,5 @@
 package com.users.services;
 
-//import com.email.EmailService;
 import com.exceptions.AppException;
 import com.users.model.Role;
 import com.users.model.RoleName;
@@ -9,7 +8,6 @@ import com.security.payload.ApiResponse;
 import com.security.payload.JwtAuthenticationResponse;
 import com.security.payload.LoginRequest;
 import com.users.model.registration.ChangePassword;
-import com.users.PasswordGenerator;
 import com.users.model.registration.RegisterUser;
 import com.users.repositories.RoleRepository;
 import com.users.repositories.UserRepository;
@@ -29,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -39,9 +37,6 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-//    @Autowired
-//    private EmailService emailService;
-//
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -54,14 +49,15 @@ public class UserService {
         long id = Long.parseLong(request.getUserPrincipal().getName());
         String oldPassword = changePassword.getNewPassword();
         String newPassword = changePassword.getNewPassword2();
-        Optional<User> user = Optional.ofNullable(userRepository.findById(id));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Failed to find the user in the repository"));
 
-        boolean changePasswordNull = oldPassword != null && user.isPresent();
+        boolean changePasswordNull = oldPassword != null;
 
         if (changePasswordNull && changePassword.checkNewPassword()) {
             String generatedSecuredPasswordHash = passwordEncoder.encode(newPassword);
-            user.get().setHash(generatedSecuredPasswordHash);
-            userRepository.save(user.get());
+            user.setHash(generatedSecuredPasswordHash);
+            userRepository.save(user);
 
             return new ResponseEntity<>(new ApiResponse(true, "User password changed successfully"),
                     HttpStatus.ACCEPTED);
@@ -75,24 +71,14 @@ public class UserService {
     public ResponseEntity<?> login(HttpServletRequest httpServletRequest, LoginRequest login) {
         String email = login.getEmail();
         String password = login.getPassword();
-        Optional<User> existingUser = userRepository.findByEmail(email);
+        User existingUser = userRepository.findByEmail(email)
+                .orElse(new User("", ""));
 
-        boolean letLogIn = email != null && password != null && existingUser.isPresent()
-                && passwordEncoder.matches(login.getPassword(), existingUser.get().getHash());
-
-        String sessionID = httpServletRequest.getSession().getId();
+        boolean letLogIn = email != null && password != null
+                && !existingUser.getEmail().equals("") && !existingUser.getHash().equals("")
+                && passwordEncoder.matches(login.getPassword(), existingUser.getHash());
 
         if(letLogIn){
-//            if (existingUser.get().isIsBanned() && existingUser.get().checkBannedTime()) {
-//                existingUser.get().resetFailedLogOnCount();
-//            } else if (existingUser.get().isIsBanned() && !existingUser.get().checkBannedTime()){
-//                UserLogs userLogs =
-//                        new UserLogs(existingUser.get().getId(), false, false, sessionID);
-//                logsRepository.save(userLogs);
-//                return new ResponseEntity<>(new ApiResponse(false, "Blocked"),
-//                        HttpStatus.BAD_REQUEST);
-//            }
-
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             login.getEmail(),
@@ -105,13 +91,6 @@ public class UserService {
             httpServletRequest.getSession(true).setAttribute("email", email);
 
             return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
-        } else if (existingUser.isPresent()) {
-//            existingUser.get().setFailedLogOnCount();
-//            if (existingUser.get().isIsBanned()) {
-//                existingUser.get().setBannedTime();
-//            }
-            return new ResponseEntity<>(new ApiResponse(false, "Login failed"),
-                    HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(new ApiResponse(false, "Login failed entirely"),
                     HttpStatus.BAD_REQUEST);
@@ -120,17 +99,18 @@ public class UserService {
 
     public ResponseEntity<?> createUser(RegisterUser registerUser)  {
         String email = registerUser.getEmail();
-        String emailExists = userRepository.findMail(email);
         String password = registerUser.getPassword();
 
-        Optional<User> userExists = userRepository.findByEmail(email);
+        User existingUser = userRepository.findByEmail(email).orElse(new User("",""));
 
-        boolean registerEmailNull = email != null && emailExists == null && userExists.isEmpty();
+        boolean userExists = !existingUser.getEmail().equals("") && !existingUser.getHash().equals("");
+        boolean registerEmailNull = email != null && !userExists;
+
 
         if (registerEmailNull) {
-            String generatedPassword = passwordEncoder.encode(password);
+            String hashedPassword = passwordEncoder.encode(password);
 
-            User result = updateUser(generatedPassword, email);
+            User result = updateUser(hashedPassword, email);
 
             URI location = ServletUriComponentsBuilder
                     .fromCurrentContextPath().path("/api/users/{email}")
@@ -138,7 +118,7 @@ public class UserService {
 
             return ResponseEntity.created(location)
                     .body(new ApiResponse(true, "User registered successfully"));
-        } else if (userExists.isPresent()) {
+        } else if (userExists) {
             return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
         } else {

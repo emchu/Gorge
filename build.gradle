@@ -32,7 +32,9 @@ repositories {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "com.vaadin.external.google", module:"android-json"
+    }
     testCompile("org.springframework.security:spring-security-test")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("com.h2database:h2")
@@ -52,4 +54,10 @@ dependencies {
     compile group: 'com.jcraft', name: 'jsch', version: '0.1.55'
     compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '1.0.0'
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.2.1.RELEASE'
+
+}
+
+test {
+    useJUnitPlatform()
 }

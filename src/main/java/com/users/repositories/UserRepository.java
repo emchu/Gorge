@@ -11,9 +11,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findById(long id);
+    Optional<User> findById(long id);
     Optional<User> findByEmail(String mail);
-    User findByHash(String hash);
 
     @Query(value = "select users.hash from users where users.email = :email", nativeQuery = true)
     String findHashByEmail(@Param("email") String email);
