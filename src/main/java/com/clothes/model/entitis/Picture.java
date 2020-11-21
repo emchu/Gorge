@@ -1,5 +1,6 @@
-package com.clothes.model;
+package com.clothes.model.entitis;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class Picture {
     private String link;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_product", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

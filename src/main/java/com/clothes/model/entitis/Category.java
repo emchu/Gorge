@@ -1,9 +1,12 @@
-package com.clothes.model;
+package com.clothes.model.entitis;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -25,10 +28,12 @@ public class Category {
     @Getter @Setter
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product")
-    @Getter @Setter
-    private Product idProduct;
+    @OneToMany(mappedBy = "idCategory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @MapKey(name = "id_product_category")
+    @JsonBackReference
+    @Getter
+    @Setter
+    private List<Product> productList = new ArrayList<>();
 
     public Category(long id, String name) {
         this.id = id;

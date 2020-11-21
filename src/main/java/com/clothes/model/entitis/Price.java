@@ -1,6 +1,7 @@
-package com.clothes.model;
+package com.clothes.model.entitis;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ public class Price {
 
     @OneToMany(mappedBy = "idPrice", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapKey(name = "id_product_price")
-    @JsonManagedReference
+    @JsonBackReference
     @Getter
     @Setter
     private List<Product> productList = new ArrayList<>();

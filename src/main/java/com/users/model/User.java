@@ -1,5 +1,6 @@
 package com.users.model;
 
+import com.clothes.model.entitis.Product;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,6 +39,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "id_role"))
     @Setter @Getter
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Setter @Getter
+    Set<Product> likedProducts;
 
     public User(String email, String hash) {
         this.email = email;
