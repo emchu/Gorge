@@ -1,0 +1,72 @@
+.title{
+    margin-bottom: 10px;
+    font-size: 20pt;
+    color: #b3b3b3;
+    text-align: center;
+} 
+
+.card-head{
+    color: black;
+    font-family: "Verdana", Times, serif;
+}
+
+.second-bar{
+    font-size: 11pt;
+    font-family: "Verdana", Times, serif;
+}
+
+.card-price{
+    color: #A9A9A9;
+    font-family: "Verdana", Times, serif;
+    margin-bottom: 0pt;
+}
+
+.card-details{
+    font-size: 10.5pt;
+    color: #A9A9A9;
+    font-family: "Verdana", Times, serif;
+}
+
+.text-custom{
+    font-size: 10.5pt;
+    color: black;
+    font-family: "Verdana", Times, serif;
+}
+
+.button-article{
+    background-color: #B0C4DE;
+    color:white;
+    font-family: "Verdana", Times, serif;
+}
+
+.img-custom {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.navbar-custom {
+    background-color: #E6E6FA;
+}
+
+.login-box{
+    padding-top: 16px;
+    /* padding-bottom: 16px;  */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 20% auto 20%;
+    height: 90%;
+    flex: 1 1 auto;
+    align-content: center;
+}
+
+.grid-center{
+    padding: 25px;
+    grid-column: 2;
+}
+
+.scroll-class {
+    height: 100%;
+    overflow-y: scroll;
+  }

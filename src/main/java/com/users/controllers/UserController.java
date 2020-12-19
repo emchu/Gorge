@@ -2,6 +2,7 @@ package com.users.controllers;
 
 import com.users.model.User;
 import com.security.payload.LoginRequest;
+import com.users.model.likes.GetLike;
 import com.users.model.registration.ChangePassword;
 import com.users.model.registration.RegisterUser;
 import com.users.services.UserService;
@@ -27,7 +28,7 @@ public class UserController {
 
     @PostMapping("/api/auth/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?>  createUser(@RequestBody @NotNull RegisterUser registerUser) {
+    public ResponseEntity<?>  createUser(@ModelAttribute @NotNull RegisterUser registerUser) {
         return Try.of(() -> userService.createUser(registerUser)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
@@ -40,10 +41,10 @@ public class UserController {
         return userService.GetAllUsers();
     }
 
-    @RequestMapping(value = "/api/auth/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?>  login( @NotNull HttpServletRequest httpServletRequest,
-                                     @RequestBody @NotNull LoginRequest login) {
+    public ResponseEntity<?>  login( @ModelAttribute @NotNull HttpServletRequest httpServletRequest,
+                                     @ModelAttribute @NotNull LoginRequest login) {
         return Try.of(() ->  userService.login(httpServletRequest, login)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
@@ -56,6 +57,42 @@ public class UserController {
     public ResponseEntity<?> newPassword( @NotNull HttpServletRequest httpServletRequest,
                                           @RequestBody @NotNull ChangePassword changePassword) {
         return  Try.of(() -> userService.newPassword(httpServletRequest, changePassword)).getOrElseGet( t -> {
+            log.error("Exception. {}", t.getCause().getMessage());
+            return null;
+        });
+    }
+
+    @PostMapping("/api/auth/like")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> likeProduct(@RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.like(getLike)).getOrElseGet( t -> {
+            log.error("Exception. {}", t.getCause().getMessage());
+            return null;
+        });
+    }
+
+    @PostMapping("/api/auth/like/remove")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> removeLikedProduct(@RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.removeLike(getLike)).getOrElseGet( t -> {
+            log.error("Exception. {}", t.getCause().getMessage());
+            return null;
+        });
+    }
+
+    @PostMapping("/api/auth/favourite")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> favouriteProduct(@RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.favourite(getLike)).getOrElseGet( t -> {
+            log.error("Exception. {}", t.getCause().getMessage());
+            return null;
+        });
+    }
+
+    @PostMapping("/api/auth/favourite/remove")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> removeFavouriteProduct(@RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.removeFavourite(getLike)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });

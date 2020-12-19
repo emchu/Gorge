@@ -1,5 +1,7 @@
 package com.users.services;
 
+import com.clothes.model.entitis.Product;
+import com.clothes.services.ProductService;
 import com.exceptions.AppException;
 import com.users.model.Role;
 import com.users.model.RoleName;
@@ -7,12 +9,15 @@ import com.users.model.User;
 import com.security.payload.ApiResponse;
 import com.security.payload.JwtAuthenticationResponse;
 import com.security.payload.LoginRequest;
+import com.users.model.likes.GetLike;
 import com.users.model.registration.ChangePassword;
 import com.users.model.registration.RegisterUser;
 import com.users.repositories.RoleRepository;
 import com.users.repositories.UserRepository;
 import com.security.JwtTokenProvider;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +41,9 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -90,7 +98,10 @@ public class UserService {
             String jwt = tokenProvider.generateToken(authentication);
             httpServletRequest.getSession(true).setAttribute("email", email);
 
-            return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/api/auth/"));
+
+            return new ResponseEntity<>(new JwtAuthenticationResponse(jwt), headers, HttpStatus.MOVED_PERMANENTLY);
         } else {
             return new ResponseEntity<>(new ApiResponse(false, "Login failed entirely"),
                     HttpStatus.BAD_REQUEST);
@@ -112,12 +123,17 @@ public class UserService {
 
             User result = updateUser(hashedPassword, email);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentContextPath().path("/api/users/{email}")
-                    .buildAndExpand(result.getEmail()).toUri();
+//            URI location = ServletUriComponentsBuilder
+//                    .fromCurrentContextPath().path("/api/users/{email}")
+//                    .buildAndExpand(result.getEmail()).toUri();
 
-            return ResponseEntity.created(location)
-                    .body(new ApiResponse(true, "User registered successfully"));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("/api/auth/"));
+
+//            return ResponseEntity.created(URI.create(("/api/auth/")))
+//                    .body( new ApiResponse(true, "User registered successfully"));
+            return new ResponseEntity<>(
+                    "User registered successfully", headers, HttpStatus.MOVED_PERMANENTLY);
         } else if (userExists) {
             return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
@@ -138,5 +154,47 @@ public class UserService {
 
     public List<User> GetAllUsers(){
         return userRepository.findAll();
+    }
+
+    public ResponseEntity<?> like(GetLike getLike) {
+        Long idProduct = getLike.getIdProduct();
+        Long idUser = getLike.getIdUser();
+        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Product product = productService.getProductById(idProduct);
+        user.addProductToLikes(product);
+
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+
+    public ResponseEntity<?> removeLike(GetLike getLike) {
+        Long idProduct = getLike.getIdProduct();
+        Long idUser = getLike.getIdUser();
+        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Product product = productService.getProductById(idProduct);
+        user.removeProductLike(product);
+
+        userRepository.deleteLike(idProduct, idUser);
+        return ResponseEntity.ok("");
+    }
+
+    public ResponseEntity<?> favourite(GetLike getLike) {
+        Long idProduct = getLike.getIdProduct();
+        Long idUser = getLike.getIdUser();
+        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Product product = productService.getProductById(idProduct);
+        user.addProductToFavourites(product);
+
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+
+    public ResponseEntity<?> removeFavourite(GetLike getLike) {
+        Long idProduct = getLike.getIdProduct();
+        Long idUser = getLike.getIdUser();
+        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Product product = productService.getProductById(idProduct);
+        user.removeProductFavourite(product);
+
+        userRepository.deleteFavourite(idProduct, idUser);
+        return ResponseEntity.ok("");
     }
 }

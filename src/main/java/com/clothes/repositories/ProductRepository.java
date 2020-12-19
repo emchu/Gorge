@@ -20,15 +20,46 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<List<Product>> findBySex(String name);
     Optional<List<Product>> findByIdCategory(Category category);
     Optional<List<Product>> findByIdStore(Store store);
+
     Page<Product> findByIdCategoryNameContaining(String categoryName, Pageable pageable);
     Page<Product> findBySex(String sex, Pageable pageable);
     Page<Product> findByIdStoreName(String storeName, Pageable pageable);
+
     Page<Product> findByIdCategoryNameContainingAndSexAndIdStoreName(
             String categoryName, String sex, String storeName, Pageable pageable);
+
     Page<Product> findByIdCategoryNameContainingAndSex(
             String categoryName, String sex, Pageable pageable);
     Page<Product> findByIdCategoryNameContainingAndIdStoreName(
             String categoryName, String storeName, Pageable pageable);
     Page<Product> findBySexAndIdStoreName(String sex, String storeName, Pageable pageable);
+
+    Page<Product> findByIdPriceValueLessThan(double price, Pageable pageable);
+    Page<Product> findByIdPriceValueLessThanEqual(double price, Pageable pageable);
+
+    Page<Product> findByIdPriceValueGreaterThan(double price, Pageable pageable);
+    Page<Product> findByIdPriceValueGreaterThanEqual(double price, Pageable pageable);
+
+    Page<Product> findByIdPriceValueBetween(double startPrice, double endPrice, Pageable pageable);
+
+    Page<Product> findByIdCategoryNameContainingAndSexAndIdStoreNameAndIdPriceValueBetween(
+            String categoryName, String sex, String storeName, double startPrice, double endPrice, Pageable pageable);
+
+    Page<Product> findByIdCategoryNameContainingAndIdPriceValueBetween(
+            String categoryName, double startPrice, double endPrice, Pageable pageable);
+    Page<Product> findBySexAndIdPriceValueBetween(
+            String sex, double startPrice, double endPrice, Pageable pageable);
+    Page<Product> findByIdStoreNameAndIdPriceValueBetween(
+            String storeName, double startPrice, double endPrice, Pageable pageable);
+
+    Page<Product> findByIdCategoryNameContainingAndSexAndIdPriceValueBetween(
+            String categoryName, String sex, double startPrice, double endPrice, Pageable pageable);
+    Page<Product> findByIdCategoryNameContainingAndIdStoreNameAndIdPriceValueBetween(
+            String categoryName, String storeName, double startPrice, double endPrice, Pageable pageable);
+    Page<Product> findBySexAndIdStoreNameAndIdPriceValueBetween(
+            String sex, String storeName, double startPrice, double endPrice, Pageable pageable);
+
+    Page<Product> findByFavoritesId(long idProduct, Pageable pageable);
+
     //do price
 }

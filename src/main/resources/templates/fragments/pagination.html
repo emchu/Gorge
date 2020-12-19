@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js"></script>
+    <script type="text/javascript">
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
+        })
+    </script>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/article.css">
+
+</head>
+<body>
+<div th:fragment="main">
+    <nav aria-label="Pagination" th:if="${productPage.totalPages gt 0}">
+        <ul class="pagination justify-content-center font-weight-bold">
+            <li class="page-item button-article" th:classappend="${productPage.number eq 0} ? 'd-none'">
+                <a class="page-link button-article"
+                   th:href="@{?pageNo={id}(id=${productPage.number lt 1 ? 0 : productPage.number - 1})}"
+                   aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:classappend="${i eq productPage.number} ? 'active'"
+                th:each="i : ${#numbers.sequence( productPage.number, productPage.totalPages > 10 + productPage.number ? productPage.number + 10 : productPage.totalPages - 1 , 1)}">
+                <a class="page-link button-article"
+                   th:href="@{?pageNo={id}&category={cat}&gender={gen}&store={sto}(id=${i}, cat=${categoryVal}, gen=${genderVal}, sto=${storeVal})}"
+                   th:text="${i +1}"
+                   th:title="${'Page '+ i}"
+                   rel="tooltip"></a>
+            </li>
+            <li class="page-item d-none" th:if="${productPage.number + 10 < productPage.totalPages}">
+                <a class="page-link svg-icon button-article" href="#">
+                    <span data-feather="more-horizontal" width="20" height="20"></span>
+                </a>
+            </li>
+            <li class="page-item" th:classappend="${productPage.number + 1 eq productPage.totalPages} ? 'd-none'">
+                <a class="page-link button-article"
+                   th:href="@{?pageNo={id}&category={cat}&gender={gen}&store={sto}(id=${productPage.number + 1}, cat=${categoryVal}, gen=${genderVal}, sto=${storeVal})}"
+                   aria-label="Next" title="Next Page" data-toggle="tooltip">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>

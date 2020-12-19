@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" ></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/article.css">
+
+</head>
+
+<body>
+<div th:fragment="main" class="container-fluid "  >
+    <div class="row pt-2 justify-content-center" id="selected">
+        <div th:each="product, itemStat : *{productPage.content}" class="col-3 pl-0 pr-0 card m-2 " style="min-width: 300px; max-width: 500px" >
+            <a th:href="@{product/{id}(id=${product.id})}">
+                <img class="card-img-top responsive"
+                     th:src="${product.pictureList[0].link}"
+                     style="width: 100%; object-fit: cover;  overflow:auto;"
+                     id="picture"></a>
+<!--            <img-->
+<!--                    class="card-img-top responsive"-->
+<!--                    th:src="${product.pictureList[0].link}"-->
+<!--                    style="display: none;"-->
+<!--                    id="picture<?php echo $i ?>-alt">-->
+
+            <div class="card-body d-flex flex-column">
+                <h5><a class="card-title card-head" id="card-title"
+                       th:href="@{product/{id}(id=${product.id})}"
+                       th:text="${product.name}"></a></h5>
+                <p class="card-text card-price" th:text="${product.idPrice.value} + ' zł'">
+                    <br />
+                <p class="card-text card-details" style="color: #A9A9A9">
+                    <br />
+                </p>
+                <a th:href="@{product/{id}(id=${product.id})}" class="btn button-article mt-auto align-items-end">Przejdź do produktu</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

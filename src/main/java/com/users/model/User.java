@@ -40,9 +40,21 @@ public class User {
     @Setter @Getter
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "user_product_likes",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_product"))
     @Setter @Getter
-    Set<Product> likedProducts;
+    Set<Product> likedProducts = new HashSet<Product>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "user_product_favourites",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_product"))
+    @Setter @Getter
+    Set<Product> favoriteProducts = new HashSet<Product>();
 
     public User(String email, String hash) {
         this.email = email;
@@ -50,4 +62,24 @@ public class User {
     }
 
     public User() {}
+
+    public void addProductToLikes(Product product){
+        this.likedProducts.add(product);
+//        product.getLikes().add(this);
+    }
+
+    public void removeProductLike(Product product){
+        this.likedProducts.remove(product);
+        product.getLikes().remove(this);
+    }
+
+    public void addProductToFavourites(Product product){
+        this.favoriteProducts.add(product);
+//        product.getFavorites().add(this);
+    }
+
+    public void removeProductFavourite(Product product){
+        this.favoriteProducts.remove(product);
+        product.getFavorites().remove(this);
+    }
 }

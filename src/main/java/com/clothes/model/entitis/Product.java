@@ -10,8 +10,10 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -39,7 +41,7 @@ public class Product {
 
     @Column(name = "descr", nullable = false)
     @Getter @Setter
-    private String descr;
+    private String desc;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JsonManagedReference
@@ -72,20 +74,28 @@ public class Product {
     @Getter
     private Category idCategory;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_product_likes",
             joinColumns = @JoinColumn(name = "id_product"),
             inverseJoinColumns = @JoinColumn(name = "id_user"))
     @Setter @Getter
-    Set<User> likes;
+    Set<User> likes = new HashSet<User>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "user_product_favourites",
+            joinColumns = @JoinColumn(name = "id_product"),
+            inverseJoinColumns = @JoinColumn(name = "id_user"))
+    @Setter @Getter
+    Set<User> favorites = new HashSet<User>();
 
     public Product(long id, String name, String sex, String descr,
                    Price idPrice, List<Picture> pictureList, Store idStore, Category idCategory) {
         this.id = id;
         this.name = name;
         this.sex = sex;
-        this.descr = descr;
+        this.desc = descr;
         this.idPrice = idPrice;
         this.pictureList = pictureList;
         this.idStore = idStore;
@@ -93,4 +103,14 @@ public class Product {
     }
 
     public Product() {}
+
+    public boolean favouriteExists(long idProduct) {
+        Set<Long> ifContains = favorites.stream().map(f -> f.getId()).collect(Collectors.toSet());
+        return ifContains.contains(idProduct);
+    }
+
+    public boolean likeExists(long idProduct) {
+        Set<Long> ifContains = likes.stream().map(f -> f.getId()).collect(Collectors.toSet());
+        return ifContains.contains(idProduct);
+    }
 }

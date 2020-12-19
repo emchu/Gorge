@@ -17,4 +17,5 @@ public class RegisterUser {
     @Getter
     @Setter
     private String password;
+
 }
