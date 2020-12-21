@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 
@@ -50,20 +51,43 @@ public class ProductService {
         }
     }
 
+    public ResponseEntity<Page<Product>> getProducts(Integer pageNo, Integer pageSize, String sortBy,
+                                                     String category, String gender, String store,
+                                                     String startPrice, String endPrice,
+                                                     String name) {
+        if(name.equals("")) {
+            return getAllProducts(pageNo, pageSize, sortBy, category, gender, store, startPrice, endPrice);
+        } else {
+            return getSearchedProducts(pageNo, pageSize, sortBy, name);
+        }
+    }
+
+    public ResponseEntity<Page<Product>> getSearchedProducts(Integer pageNo, Integer pageSize, String sortBy,
+                                                             String name) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+        Page<Product> pagedResult = productRepository.findByNameContaining(name, paging);
+
+        if(pagedResult.hasContent()) {
+            return ResponseEntity.ok(pagedResult);
+        } else {
+            return ResponseEntity.badRequest().body(Page.empty());
+        }
+    }
+
     public ResponseEntity<Page<Product>> getAllProducts(Integer pageNo, Integer pageSize, String sortBy,
                                             String category, String gender, String store,
                                             String startPriceString, String endPriceString) {
-        double startPrice;
-        double endPrice;
+        BigDecimal startPrice;
+        BigDecimal endPrice;
 
         if (StringUtils.isNumeric(startPriceString)) {
-             startPrice = Long.parseLong(startPriceString);
+             startPrice = new BigDecimal(startPriceString);
         } else {
-            startPrice = 0;
+            startPrice = BigDecimal.valueOf(0);
         }
 
         if (StringUtils.isNumeric(endPriceString)) {
-            endPrice = Long.parseLong(endPriceString);
+            endPrice = new BigDecimal(endPriceString);
         } else {
             endPrice = priceService.findMaxPrice();
         }
@@ -107,56 +131,56 @@ public class ProductService {
     }
 
     public Page<Product> filterCategoryGenderStore(Pageable paging, String category, String gender, String store,
-                                                   double startPrice, double endPrice) {
+                                                   BigDecimal startPrice, BigDecimal endPrice) {
         return  productRepository.findByIdCategoryNameContainingAndSexAndIdStoreNameAndIdPriceValueBetween(
                 category, gender, store, startPrice, endPrice, paging
         );
     }
 
     public Page<Product> filterCategoryGender(Pageable paging, String category, String gender,
-                                              double startPrice, double endPrice) {
+                                              BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findByIdCategoryNameContainingAndSexAndIdPriceValueBetween(
                         category, gender, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterCategoryStore(Pageable paging, String category, String store,
-                                             double startPrice, double endPrice) {
+                                             BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findByIdCategoryNameContainingAndIdStoreNameAndIdPriceValueBetween(
                         category, store, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterGenderStore(Pageable paging, String gender, String store,
-                                           double startPrice, double endPrice) {
+                                           BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findBySexAndIdStoreNameAndIdPriceValueBetween(
                         gender, store, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterCategory(Pageable paging, String category,
-                                        double startPrice, double endPrice) {
+                                        BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findByIdCategoryNameContainingAndIdPriceValueBetween(
                         category, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterGender(Pageable paging, String gender,
-                                      double startPrice, double endPrice) {
+                                      BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findBySexAndIdPriceValueBetween(
                         gender, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterStore(Pageable paging, String store,
-                                     double startPrice, double endPrice) {
+                                     BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findByIdStoreNameAndIdPriceValueBetween(
                         store, startPrice, endPrice, paging);
     }
 
     public Page<Product> filterDefault(Pageable paging,
-                                       double startPrice, double endPrice) {
+                                       BigDecimal startPrice, BigDecimal endPrice) {
         return productRepository
                 .findByIdPriceValueBetween(
                         startPrice, endPrice, paging);

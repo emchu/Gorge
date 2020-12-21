@@ -67,7 +67,8 @@ public class SiteController {
                            @RequestParam(defaultValue = "") String gender,
                            @RequestParam(defaultValue = "") String store,
                            @RequestParam(defaultValue = "0") String startPrice,
-                           @RequestParam(defaultValue = "") String endPrice) {
+                           @RequestParam(defaultValue = "") String endPrice,
+                           @RequestParam(defaultValue = "") String name) {
 
         model.addAttribute("httpServletRequest", httpServletRequest);
         model.addAttribute("loginRequest", loginRequest);
@@ -79,9 +80,10 @@ public class SiteController {
         model.addAttribute("storeVal", store);
         model.addAttribute("startPriceVal", startPrice);
         model.addAttribute("endPriceVal", endPrice);
+        model.addAttribute("name", name);
 
         ResponseEntity<Page<Product>> products = productService
-                .getAllProducts(pageNo, pageSize, sortBy, category, gender, store, startPrice, endPrice);
+                .getProducts(pageNo, pageSize, sortBy, category, gender, store, startPrice, endPrice, name);
         Page<Product> productPage = products.getBody();
 
         List<Category> categories = categoryService.getCategory();

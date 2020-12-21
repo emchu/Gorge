@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 
@@ -15,8 +16,8 @@ public interface PriceRepository extends JpaRepository<Price, Long> {
     Optional<Price> findByValue(double value);
 
     @Query(value = "SELECT MAX(price) FROM price", nativeQuery = true)
-    public double findByMaxPrice();
+    public BigDecimal findByMaxPrice();
 
     @Query(value = "SELECT MIN(price) FROM price", nativeQuery = true)
-    public double findByMinPrice();
+    public BigDecimal findByMinPrice();
 }

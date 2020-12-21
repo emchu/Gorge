@@ -6,13 +6,37 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" ></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js"></script>
+    <script src="https://kit.fontawesome.com/fc1f7fe526.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         $('#myModal').on('shown.bs.modal', function () {
             $('#myInput').trigger('focus')
         })
+
+        $(document).ready(function(){
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 50) {
+                    $('#back-to-top').fadeIn();
+                } else {
+                    $('#back-to-top').fadeOut();
+                }
+            });
+            // scroll body to 0px on click
+            $('#back-to-top').click(function () {
+                $('#back-to-top').tooltip('hide');
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
+
+            $('#back-to-top').tooltip('show');
+
+        });
     </script>
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/article.css">
+    <link rel="stylesheet" href="/css/error.css">
+    <link rel="stylesheet" href="/css/search.css">
 
 </head>
 <body>
@@ -23,6 +47,14 @@
     <div class="container-fluid " id="articles">
         <div th:insert="/fragments/productSimple.html :: main"></div>
     </div>
+    <a id="back-to-top"
+       href="#"
+       class="btn btn-article btn-lg back-to-top"
+       role="button" title="Kliknij, aby przejść do początku strony"
+       data-toggle="tooltip"
+       data-placement="left">
+        <i class="fas fa-arrow-up"></i>
+    </a>
     <div th:insert="/fragments/pagination.html :: main"></div>
 <!--    <div>-->
 <!--        <nav aria-label="Page navigation example">-->

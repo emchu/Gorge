@@ -16,7 +16,7 @@
     <div class="grid-container p-5 d-flex justify-content-center">
         <div class="grid-center login-box col-6">
         <h5 class="modal-header"> Rejestracja </h5>
-            <form th:action="@{/api/auth/registration}" th:object="${registerUser}" method="post" name="myForm" >
+            <form th:action="@{/users/signup}" th:object="${registerUser}" method="post" name="myForm" >
                 <div class="form-group  text-custom">
                     <label for="email">Adres email:</label>
                     <input type="email" class="form-control" id="email" th:field="*{email}" required>

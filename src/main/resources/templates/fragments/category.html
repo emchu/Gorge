@@ -11,8 +11,6 @@
             $('#myInput').trigger('focus')
         })
     </script>
-    <link rel="stylesheet" href="/css/login.css">
-    <link rel="stylesheet" href="/css/article.css">
 
 </head>
 <body>
@@ -52,6 +50,14 @@
                                th:text="${store.name}"></a>
                         </div>
                     </li>
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Min" aria-label="Min">
+                        <input class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Max" aria-label="Max">
+                        <button class="button-filter my-2 my-sm-0 " type="submit">Filtruj</button>
+                    </form>
+<!--                    <li class="nav-item" >-->
+<!--                        <a class="nav-link" th:classappend="${store=null} ? 'hidden'" th:href="@{?}">Wyczyść filtry <i class="fas fa-times"></i></a>-->
+<!--                    </li>-->
                 </ul>
             </div>
         </div>

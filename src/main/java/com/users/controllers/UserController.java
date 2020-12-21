@@ -26,7 +26,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/api/auth/registration")
+    @PostMapping("/users/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?>  createUser(@ModelAttribute @NotNull RegisterUser registerUser) {
         return Try.of(() -> userService.createUser(registerUser)).getOrElseGet( t -> {
@@ -41,7 +41,7 @@ public class UserController {
         return userService.GetAllUsers();
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "users/signin", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?>  login( @ModelAttribute @NotNull HttpServletRequest httpServletRequest,
                                      @ModelAttribute @NotNull LoginRequest login) {
