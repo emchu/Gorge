@@ -9,10 +9,12 @@ import com.clothes.services.CategoryService;
 import com.clothes.services.ProductService;
 import com.clothes.services.StoreService;
 import com.security.payload.LoginRequest;
+import com.users.model.registration.ChangePassword;
 import com.users.model.registration.RegisterUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,8 +60,6 @@ public class SiteController {
 
     @GetMapping(value = "/api/auth/")
     public String mainPage(Model model,
-                           HttpServletRequest httpServletRequest,
-                           @ModelAttribute LoginRequest loginRequest,
                            @RequestParam(defaultValue = "0") Integer pageNo,
                            @RequestParam(defaultValue = "12") Integer pageSize,
                            @RequestParam(defaultValue = "id") String sortBy,
@@ -69,9 +69,7 @@ public class SiteController {
                            @RequestParam(defaultValue = "0") String startPrice,
                            @RequestParam(defaultValue = "") String endPrice,
                            @RequestParam(defaultValue = "") String name) {
-
-        model.addAttribute("httpServletRequest", httpServletRequest);
-        model.addAttribute("loginRequest", loginRequest);
+//
         model.addAttribute("pageNoVal", pageNo);
         model.addAttribute("pageSizeVal", pageSize);
         model.addAttribute("sortByVal", sortBy);
@@ -95,38 +93,42 @@ public class SiteController {
         return "index";
     }
 
-    @GetMapping(value = "/api/auth/page")
+    @GetMapping(value = "/page")
     public String productsPage(Model model) {
 //        Product product =
         return "productSimple";
     }
 
-    @GetMapping(value = "/api/auth/registration")
-    public String registration(HttpServletRequest httpServletRequest,
-                               @ModelAttribute LoginRequest loginRequest,
-                               @ModelAttribute RegisterUser registerUser,
+    @GetMapping(value = "/registration")
+    public String registration(@ModelAttribute RegisterUser registerUser,
                                Model model) {
         model.addAttribute("registerUser", registerUser);
         return "register";
     }
 
-    @GetMapping(value = "/api/auth/favourites")
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/password/change")
+    public String changePassword(HttpServletRequest httpServletRequest,
+                                 @ModelAttribute ChangePassword changePassword,
+                                 Model model) {
+        model.addAttribute("changePassword", changePassword);
+        return "change_password";
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/favourites")
     public String favourites(Model model,
                              HttpServletRequest httpServletRequest,
-                             @ModelAttribute LoginRequest loginRequest,
                              @RequestParam(defaultValue = "0") Integer pageNo,
                              @RequestParam(defaultValue = "12") Integer pageSize,
-                             @RequestParam(defaultValue = "id") String sortBy,
-                             @RequestParam (defaultValue = "9") long idUser) {
+                             @RequestParam(defaultValue = "id") String sortBy) {
 
-        model.addAttribute("httpServletRequest", httpServletRequest);
-        model.addAttribute("loginRequest", loginRequest);
         model.addAttribute("pageNoVal", pageNo);
         model.addAttribute("pageSizeVal", pageSize);
         model.addAttribute("sortByVal", sortBy);
 
         ResponseEntity<Page<Product>> products = productService
-                .getFavouriteProducts(pageNo, pageSize, sortBy, idUser);
+                .getFavouriteProducts(httpServletRequest, pageNo, pageSize, sortBy);
         Page<Product> productPage = products.getBody();
 
         model.addAttribute("productPage", productPage);

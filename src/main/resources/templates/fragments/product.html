@@ -31,8 +31,7 @@
                     contentType : 'application/json',
 
                     data        : JSON.stringify({
-                        idProduct: idProduct,
-                        idUser : 9
+                        idProduct: idProduct
                     })
                })
             } else if (document.getElementById("heart").classList.contains("fa-heart")) {
@@ -46,8 +45,7 @@
                     contentType : 'application/json',
 
                     data        : JSON.stringify({
-                        idProduct: idProduct,
-                        idUser : 9
+                        idProduct: idProduct
                     })
                 })
             }
@@ -69,10 +67,11 @@
                     url         : serviceEndpointAdd,
                     dataType    : 'application/json',
                     contentType : 'application/json',
-
-                    data        : JSON.stringify({
-                        idProduct: idProduct,
-                        idUser : 9
+                    headers: {
+                        'Bearer': getCookie("Bearer")
+                    },
+                data        : JSON.stringify({
+                        idProduct: idProduct
                     })
                 })
             } else if (document.getElementById("like").classList.contains("fa-thumbs-up")) {
@@ -86,14 +85,14 @@
                     contentType : 'application/json',
 
                     data        : JSON.stringify({
-                        idProduct: idProduct,
-                        idUser : 9
+                        idProduct: idProduct
                     })
                 })
             }
         }
 
     </script>
+    <script type="text/javascript" src="/js/login.js"></script>
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/article.css">
 

@@ -33,9 +33,9 @@
 
         });
     </script>
+    <script type="text/javascript" src="/js/login.js"></script>
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/article.css">
-    <link rel="stylesheet" href="/css/error.css">
     <link rel="stylesheet" href="/css/search.css">
 
 </head>
@@ -56,22 +56,6 @@
         <i class="fas fa-arrow-up"></i>
     </a>
     <div th:insert="/fragments/pagination.html :: main"></div>
-<!--    <div>-->
-<!--        <nav aria-label="Page navigation example">-->
-<!--            <ul class="pagination justify-content-end" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder)}">-->
-<!--                <li class="page-item disabled">-->
-<!--                    <a class="page-link" href="#" tabindex="-1">Previous</a>-->
-<!--                </li>-->
-<!--                <li class="page-item"><a class="page-link" th:herf="${urlBuilder.fromCurrentRequest().replaceQueryParam('pageNo', '1').toUriString()}">1</a></li>-->
-<!--                <li class="page-item"><a class="page-link" th:herf="${urlBuilder.fromCurrentRequest().replaceQueryParam('pageNo', '2').toUriString()}">2</a></li>-->
-<!--                <li class="page-item"><a class="page-link" th:herf="${urlBuilder.fromCurrentRequest().replaceQueryParam('pageNo', '3').toUriString()}">3</a></li>-->
-<!--                <li class="page-item">-->
-<!--                    <a class="page-link" href="#">Next</a>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </nav>-->
-<!--    </div>-->
-
 </div>
 </body>
 </html>

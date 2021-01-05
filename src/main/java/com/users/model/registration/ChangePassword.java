@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@JsonPropertyOrder({"password","newPassword", "newPassword2" })
+@JsonPropertyOrder({"password", "newPassword", "newPassword2" })
 public class ChangePassword {
 
     @Getter @Setter
@@ -36,19 +36,17 @@ public class ChangePassword {
 
     public boolean checkNewPassword() {
         String passwordToChange = getNewPassword();
-        String passwordToChange2 = getNewPassword2();
         return passwordHasRequiredChar(passwordToChange)
                 && passwordSize(passwordToChange)
-                && passwordCharSequence(passwordToChange)
-                && samePassword(passwordToChange, passwordToChange2);
+                && passwordCharSequence(passwordToChange);
     }
 
-    private boolean samePassword(String newPassword, String newPassword2){
+    public boolean samePassword(){
         return newPassword.equals(newPassword2);
     }
 
     private boolean passwordSize(String newPassword) {
-        return newPassword.length() > 10;
+        return newPassword.length() > 7;
     }
 
     private boolean passwordHasRequiredChar(String newPassword){

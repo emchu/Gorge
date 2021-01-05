@@ -16,6 +16,7 @@ import com.users.repositories.RoleRepository;
 import com.users.repositories.UserRepository;
 import com.security.JwtTokenProvider;
 import io.vavr.control.Try;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,24 +55,38 @@ public class UserService {
 
 
     public ResponseEntity<?> newPassword(HttpServletRequest request, ChangePassword changePassword) {
-        long id = Long.parseLong(request.getUserPrincipal().getName());
-        String oldPassword = changePassword.getNewPassword();
-        String newPassword = changePassword.getNewPassword2();
+        Long id = (Long) request.getSession().getAttribute("id_user");
+        String oldPassword = changePassword.getPassword();
+        String newPassword = changePassword.getNewPassword();
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Failed to find the user in the repository"));
 
-        boolean changePasswordNull = oldPassword != null;
+        boolean userExists = !user.getEmail().equals("") && !user.getHash().equals("");
 
-        if (changePasswordNull && changePassword.checkNewPassword()) {
+        boolean changePasswordNull = oldPassword != null &&
+                passwordEncoder.matches(oldPassword, user.getHash());
+        boolean passwordRequirements = changePassword.checkNewPassword();
+        boolean samePassword = changePassword.samePassword();
+
+        if (changePasswordNull && passwordRequirements && samePassword && userExists) {
             String generatedSecuredPasswordHash = passwordEncoder.encode(newPassword);
             user.setHash(generatedSecuredPasswordHash);
             userRepository.save(user);
 
             return new ResponseEntity<>(new ApiResponse(true, "User password changed successfully"),
-                    HttpStatus.ACCEPTED);
-        }
-        else {
-            return new ResponseEntity<>(new ApiResponse(false, "Failed to change the password"),
+                    HttpStatus.OK);
+
+        } else if (!changePasswordNull) {
+            return new ResponseEntity<>("1 Bad old password",
+                    HttpStatus.BAD_REQUEST);
+        } else if (!passwordRequirements) {
+            return new ResponseEntity<>("2 Password does not meet the requirements",
+                    HttpStatus.BAD_REQUEST);
+        } else if (!samePassword) {
+            return new ResponseEntity<>("3 Passwords don't match",
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>("4 Something went wrong",
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -86,7 +101,7 @@ public class UserService {
                 && !existingUser.getEmail().equals("") && !existingUser.getHash().equals("")
                 && passwordEncoder.matches(login.getPassword(), existingUser.getHash());
 
-        if(letLogIn){
+        if (letLogIn) {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             login.getEmail(),
@@ -95,33 +110,36 @@ public class UserService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            long idUser = existingUser.getId();
+
             String jwt = tokenProvider.generateToken(authentication);
             httpServletRequest.getSession(true).setAttribute("email", email);
+            httpServletRequest.getSession(true).setAttribute("id_user", idUser);
+            tokenProvider.store(jwt, authentication);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create("/api/auth/"));
 
-            return new ResponseEntity<>(new JwtAuthenticationResponse(jwt), headers, HttpStatus.MOVED_PERMANENTLY);
+            return new ResponseEntity<>(new JwtAuthenticationResponse(jwt), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new ApiResponse(false, "Login failed entirely"),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
-    public ResponseEntity<?> createUser(RegisterUser registerUser)  {
+    public ResponseEntity<?> createUser(RegisterUser registerUser) {
         String email = registerUser.getEmail();
         String password = registerUser.getPassword();
 
-        User existingUser = userRepository.findByEmail(email).orElse(new User("",""));
+        User existingUser = userRepository.findByEmail(email).orElse(new User("", ""));
 
         boolean userExists = !existingUser.getEmail().equals("") && !existingUser.getHash().equals("");
         boolean registerEmailNull = email != null && !userExists;
+        boolean samePassword = registerUser.samePassword();
+        boolean passwordRequirements = registerUser.checkPassword();
 
-
-        if (registerEmailNull) {
+        if (registerEmailNull && samePassword && passwordRequirements) {
             String hashedPassword = passwordEncoder.encode(password);
 
-            User result = updateUser(hashedPassword, email);
+            updateUser(hashedPassword, email);
 
 //            URI location = ServletUriComponentsBuilder
 //                    .fromCurrentContextPath().path("/api/users/{email}")
@@ -130,46 +148,51 @@ public class UserService {
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/api/auth/"));
 
-//            return ResponseEntity.created(URI.create(("/api/auth/")))
-//                    .body( new ApiResponse(true, "User registered successfully"));
             return new ResponseEntity<>(
                     "User registered successfully", headers, HttpStatus.MOVED_PERMANENTLY);
+
         } else if (userExists) {
-            return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!"),
+            return new ResponseEntity<>(new ApiResponse(false, "1 Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
-        } else {
+        } else if (!passwordRequirements) {
+            return new ResponseEntity<>(new ApiResponse(false, "3 Password does not meet the requirements"),
+                    HttpStatus.BAD_REQUEST);
+        } else if (!samePassword) {
+            return new ResponseEntity<>(new ApiResponse(false, "2 Passwords aren't matching"),
+                    HttpStatus.BAD_REQUEST);
+        }  else {
             return new ResponseEntity<>(new ApiResponse(false, "User creation failed"),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
-    private User updateUser(String password, String email){
+    private void updateUser(String password, String email) {
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
         User user = new User(email, password);
         user.setRoles(Collections.singleton(userRole));
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    public List<User> GetAllUsers(){
+    public List<User> GetAllUsers() {
         return userRepository.findAll();
     }
 
-    public ResponseEntity<?> like(GetLike getLike) {
+    public ResponseEntity<?> like(HttpServletRequest httpServletRequest, GetLike getLike) {
         Long idProduct = getLike.getIdProduct();
-        Long idUser = getLike.getIdUser();
-        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Long idUser = (Long) httpServletRequest.getSession(true).getAttribute("id_user");
+        User user = userRepository.findById(idUser).orElse(new User("", ""));
         Product product = productService.getProductById(idProduct);
         user.addProductToLikes(product);
 
         return ResponseEntity.ok(userRepository.save(user));
     }
 
-    public ResponseEntity<?> removeLike(GetLike getLike) {
+    public ResponseEntity<?> removeLike(HttpServletRequest httpServletRequest, GetLike getLike) {
         Long idProduct = getLike.getIdProduct();
-        Long idUser = getLike.getIdUser();
-        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Long idUser = (Long) httpServletRequest.getSession(true).getAttribute("id_user");
+        User user = userRepository.findById(idUser).orElse(new User("", ""));
         Product product = productService.getProductById(idProduct);
         user.removeProductLike(product);
 
@@ -177,24 +200,29 @@ public class UserService {
         return ResponseEntity.ok("");
     }
 
-    public ResponseEntity<?> favourite(GetLike getLike) {
+    public ResponseEntity<?> favourite(HttpServletRequest httpServletRequest, GetLike getLike) {
         Long idProduct = getLike.getIdProduct();
-        Long idUser = getLike.getIdUser();
-        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Long idUser = (Long) httpServletRequest.getSession(true).getAttribute("id_user");
+        User user = userRepository.findById(idUser).orElse(new User("", ""));
         Product product = productService.getProductById(idProduct);
         user.addProductToFavourites(product);
 
         return ResponseEntity.ok(userRepository.save(user));
     }
 
-    public ResponseEntity<?> removeFavourite(GetLike getLike) {
+    public ResponseEntity<?> removeFavourite(HttpServletRequest httpServletRequest, GetLike getLike) {
         Long idProduct = getLike.getIdProduct();
-        Long idUser = getLike.getIdUser();
-        User user = userRepository.findById(idUser).orElse(new User("",""));
+        Long idUser = (Long) httpServletRequest.getSession(true).getAttribute("id_user");
+        User user = userRepository.findById(idUser).orElse(new User("", ""));
         Product product = productService.getProductById(idProduct);
         user.removeProductFavourite(product);
 
         userRepository.deleteFavourite(idProduct, idUser);
         return ResponseEntity.ok("");
+    }
+
+    public String logout(HttpServletRequest httpServletRequest) {
+        httpServletRequest.getSession().invalidate();
+        return "redirect:/api/auth/";
     }
 }

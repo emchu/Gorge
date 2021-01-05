@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +29,23 @@ public class UserController {
 
     @PostMapping("/users/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?>  createUser(@ModelAttribute @NotNull RegisterUser registerUser) {
+    public ResponseEntity<?>  createUser(@NotNull HttpServletRequest httpServletRequest, @RequestBody @NotNull RegisterUser registerUser) {
         return Try.of(() -> userService.createUser(registerUser)).getOrElseGet( t -> {
+            log.error("Exception. {}", t.getCause().getMessage());
+            return null;
+        });
+    }
+
+    @RequestMapping(value = "/users/logout", method = RequestMethod.POST)
+    public String logout(HttpServletRequest httpServletRequest) {
+        return userService.logout(httpServletRequest);
+    }
+
+    @RequestMapping(value = "/users/signin", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?>  login( @NotNull HttpServletRequest httpServletRequest,
+                                     @RequestBody @NotNull LoginRequest login) {
+        return Try.of(() ->  userService.login(httpServletRequest, login)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });
@@ -41,18 +57,8 @@ public class UserController {
         return userService.GetAllUsers();
     }
 
-    @RequestMapping(value = "users/signin", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?>  login( @ModelAttribute @NotNull HttpServletRequest httpServletRequest,
-                                     @ModelAttribute @NotNull LoginRequest login) {
-        return Try.of(() ->  userService.login(httpServletRequest, login)).getOrElseGet( t -> {
-            log.error("Exception. {}", t.getCause().getMessage());
-            return null;
-        });
-    }
-
     @PreAuthorize("hasRole('USER')")
-    @RequestMapping(value = "/password/new", method = RequestMethod.POST)
+    @PutMapping(value = "/password/change")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> newPassword( @NotNull HttpServletRequest httpServletRequest,
                                           @RequestBody @NotNull ChangePassword changePassword) {
@@ -62,37 +68,45 @@ public class UserController {
         });
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/auth/like")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> likeProduct(@RequestBody @NotNull GetLike getLike) {
-        return Try.of(() -> userService.like(getLike)).getOrElseGet( t -> {
+    public ResponseEntity<?> likeProduct(@NotNull HttpServletRequest httpServletRequest,
+                                         @RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.like(httpServletRequest, getLike)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/auth/like/remove")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> removeLikedProduct(@RequestBody @NotNull GetLike getLike) {
-        return Try.of(() -> userService.removeLike(getLike)).getOrElseGet( t -> {
+    public ResponseEntity<?> removeLikedProduct(@NotNull HttpServletRequest httpServletRequest,
+                                                @RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.removeLike(httpServletRequest, getLike)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/auth/favourite")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> favouriteProduct(@RequestBody @NotNull GetLike getLike) {
-        return Try.of(() -> userService.favourite(getLike)).getOrElseGet( t -> {
+    public ResponseEntity<?> favouriteProduct(@NotNull HttpServletRequest httpServletRequest,
+                                              @RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.favourite(httpServletRequest, getLike)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/api/auth/favourite/remove")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> removeFavouriteProduct(@RequestBody @NotNull GetLike getLike) {
-        return Try.of(() -> userService.removeFavourite(getLike)).getOrElseGet( t -> {
+    public ResponseEntity<?> removeFavouriteProduct(@NotNull HttpServletRequest httpServletRequest,
+                                                    @RequestBody @NotNull GetLike getLike) {
+        return Try.of(() -> userService.removeFavourite(httpServletRequest, getLike)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
         });

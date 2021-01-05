@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
@@ -186,10 +187,10 @@ public class ProductService {
                         startPrice, endPrice, paging);
     }
 
-    public ResponseEntity<Page<Product>> getFavouriteProducts(Integer pageNo, Integer pageSize, String sortBy,
-                                                              long idUser) {
+    public ResponseEntity<Page<Product>> getFavouriteProducts(HttpServletRequest httpServletRequest, Integer pageNo, Integer pageSize, String sortBy) {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+        long idUser = (Long) httpServletRequest.getSession(true).getAttribute("id_user");
         Page<Product> pagedResult = productRepository.findByFavoritesId(idUser, paging);
 
         if(pagedResult.hasContent()) {

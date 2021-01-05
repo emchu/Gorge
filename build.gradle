@@ -67,8 +67,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    compile group: 'io.lettuce', name: 'lettuce-core', version: '6.0.1.RELEASE'
-    compile group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.4.1'
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '3.0.4.RELEASE'
 }
 
 test {

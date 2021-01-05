@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
-@JsonPropertyOrder({"idProduct", "idUser" })
+@JsonPropertyOrder({"idProduct" })
 public class GetLike {
-
-    @Setter @Getter
-    private long idUser;
 
     @Setter @Getter
     private long idProduct;

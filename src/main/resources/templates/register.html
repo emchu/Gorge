@@ -3,39 +3,59 @@
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js" crossorigin="anonymous"></script>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="article.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js"></script>
+    <script src="https://kit.fontawesome.com/fc1f7fe526.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/login.js"></script>
+    <script type="text/javascript" src="/js/register.js"></script>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/article.css">
+    <link rel="stylesheet" href="/css/search.css">
 </head>
 
 <body>
-    <div th:insert="/fragments/navbar.html :: main"></div>
+<div th:insert="/fragments/navbar.html :: main"></div>
 
-    <div class="grid-container p-5 d-flex justify-content-center">
-        <div class="grid-center login-box col-6">
+<div class="grid-container p-5 d-flex justify-content-center">
+    <div class="grid-center shadow bg-light login-box col-6">
         <h5 class="modal-header"> Rejestracja </h5>
-            <form th:action="@{/users/signup}" th:object="${registerUser}" method="post" name="myForm" >
-                <div class="form-group  text-custom">
-                    <label for="email">Adres email:</label>
-                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
-                </div>
-                <div class="form-group  text-custom">
-                    <label for="pwd-form">Hasło:</label>
-                    <input type="password" class="form-control" id="pwd-form" th:field="*{password}" required>
-                </div>
-<!--                <div class="form-group text-custom">-->
-<!--                    <label for="pwd-form2">Potwierdź hasło:</label>-->
-<!--                    <input type="password" class="form-control" id="pwd-form2" name="pwd-form2" required>-->
-<!--                </div>-->
-                <div class="alert alert-danger" hidden="true" id="alert">
-                    Hasła nie zgadzają się!
-                </div>
-                <input type="submit" class="btn button-article" value="Rejestracja" th:href="@{~/api/auth/}" />
-            </form>
-        </div>
+        <form action="">
+            <div class="form-group text-custom">
+                <label for="register_email">Adres email:</label>
+                <input type="email" class="form-control" id="register_email" required>
+            </div>
+            <div class="form-group text-custom">
+                <label for="pwd_register">Hasło:</label>
+                <input type="password" class="form-control" id="pwd_register" required>
+            </div>
+            <div class="form-group text-custom">
+                <label for="pwd_register2">Potwierdź hasło:</label>
+                <input type="password" class="form-control" id="pwd_register2" required>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+                <h5 class="alert-heading"> Hasło musi:</h5>
+                <p> • być przynajmniej 8 znakowe, </p>
+                <p> • zawierać przynajmniej jedną dużą literę, </p>
+                <p> • zawierać przynajmniej jeden znak specjalny </p>
+            </div>
+
+            <div id="alert-register-1" name="alert-register" class="alert alert-danger d-none">
+                Użytkownik z podanym emailem już istnieje!
+            </div>
+            <div id="alert-register-2" name="alert-register" class="alert alert-danger d-none">
+                Hasła nie zgadzają się!
+            </div>
+            <div id="alert-register-3" name="alert-register" class="alert alert-danger d-none">
+                Hasło nie spełnia warunków!
+            </div>
+
+            <div class="form-group col-sm-12" style="min-width: 250px; height:40px">
+                <a th:onclick="|register()|" class="btn button-article" style="float: right">Zatwierdź</a>
+            </div>
+        </form>
     </div>
+</div>
 
 </body>
 

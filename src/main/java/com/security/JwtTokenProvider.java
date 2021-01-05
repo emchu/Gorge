@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private static Cache restApiAuthTokenCache = new ConcurrentMapCache("");
 
 //    @Value("${app.jwtSecret}")
 //    private String jwtSecret;
@@ -67,4 +70,9 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
+    public void store(String token, Authentication authentication) {
+        restApiAuthTokenCache.put(token, authentication);
+    }
+
 }
