@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +28,7 @@ public class UserController {
 
     @PostMapping("/users/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?>  createUser(@NotNull HttpServletRequest httpServletRequest, @RequestBody @NotNull RegisterUser registerUser) {
+    public ResponseEntity<?>  createUser(@RequestBody @NotNull RegisterUser registerUser) {
         return Try.of(() -> userService.createUser(registerUser)).getOrElseGet( t -> {
             log.error("Exception. {}", t.getCause().getMessage());
             return null;
@@ -111,4 +110,14 @@ public class UserController {
             return null;
         });
     }
+
+//    @PreAuthorize("hasRole('USER')")
+//    @GetMapping(value = "/user/likes")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseEntity<List<ProductLikes>> getUserLikes(@NotNull HttpServletRequest httpServletRequest) {
+//        return Try.of(() -> userService.getUserLikes(httpServletRequest)).getOrElseGet( t -> {
+//            log.error("Exception. {}", t.getCause().getMessage());
+//            return null;
+//        });
+//    }
 }

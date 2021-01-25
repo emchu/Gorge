@@ -14,7 +14,7 @@
 
 </head>
 <body>
-<div th:fragment="main2">
+<div th:fragment="main2" onload="cleanFilter();">
     <nav class="navbar navbar-expand-sm navbar-light navbar-custom" data-toggle="affix">
         <div class="d-sm-flex d-block flex-sm-nowrap">
             <div class="collapse navbar-collapse text-center" id="navbarsExample11">
@@ -51,10 +51,16 @@
                         </div>
                     </li>
                     <form class="form-inline">
-                        <input class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Min" aria-label="Min">
-                        <input class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Max" aria-label="Max">
-                        <button class="button-filter my-2 my-sm-0 " type="submit">Filtruj</button>
+                        <input id="start_price" class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Min" aria-label="Min">
+                        <input id="end_price" class="form-control mr-sm-2" style="width: 70px" type="search" placeholder="Max" aria-label="Max">
+                        <a th:onclick="|price()|" class="btn button-article">Filtruj</a>
                     </form>
+                    <li class="nav-item" id="clear-filter" th:classappend="${isFilter} ? 'd-none'">
+                        <a class="nav-link" th:href="@{~/api/auth/}" role="button" aria-expanded="false">
+                            Wyczyść filtry
+                            <i class="fas fa-times" th:href="${url}"></i>
+                        </a>
+                    </li>
 <!--                    <li class="nav-item" >-->
 <!--                        <a class="nav-link" th:classappend="${store=null} ? 'hidden'" th:href="@{?}">Wyczyść filtry <i class="fas fa-times"></i></a>-->
 <!--                    </li>-->

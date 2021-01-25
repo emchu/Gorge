@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface PriceRepository extends JpaRepository<Price, Long> {
 
     Optional<Price> findById(long id);
-    Optional<Price> findByValue(double value);
 
     @Query(value = "SELECT MAX(price) FROM price", nativeQuery = true)
     public BigDecimal findByMaxPrice();

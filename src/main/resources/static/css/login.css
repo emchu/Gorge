@@ -23,7 +23,7 @@
 
 .card-details{
     font-size: 10.5pt;
-    color: #A9A9A9;
+    color: #A9A9A9  !important;
     font-family: "Verdana", Times, serif;
 }
 

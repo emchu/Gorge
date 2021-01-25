@@ -43,6 +43,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByIdPriceValueGreaterThan(BigDecimal price, Pageable pageable);
     Page<Product> findByIdPriceValueGreaterThanEqual(BigDecimal price, Pageable pageable);
 
+    //main page
     Page<Product> findByIdPriceValueBetween(BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
 
     Page<Product> findByIdCategoryNameContainingAndSexAndIdStoreNameAndIdPriceValueBetween(
@@ -62,7 +63,25 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findBySexAndIdStoreNameAndIdPriceValueBetween(
             String sex, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
 
-    Page<Product> findByFavoritesId(long idProduct, Pageable pageable);
+    //favourites
+    Page<Product> findByFavoritesId(long idUser, Pageable pageable);
+    Page<Product> findByFavoritesIdAndIdPriceValueBetween(long idUser, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
 
-    //do price
+    Page<Product> findByFavoritesIdAndIdCategoryNameContainingAndSexAndIdStoreNameAndIdPriceValueBetween(
+            long idUser, String categoryName, String sex, String storeName, BigDecimal startPrice, BigDecimal endPrice,
+            Pageable pageable);
+
+    Page<Product> findByFavoritesIdAndIdCategoryNameContainingAndIdPriceValueBetween(
+            long idUser, String categoryName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+    Page<Product> findByFavoritesIdAndSexAndIdPriceValueBetween(
+            long idUser, String sex, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+    Page<Product> findByFavoritesIdAndIdStoreNameAndIdPriceValueBetween(
+            long idUser, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+
+    Page<Product> findByFavoritesIdAndIdCategoryNameContainingAndSexAndIdPriceValueBetween(
+            long idUser, String categoryName, String sex, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+    Page<Product> findByFavoritesIdAndIdCategoryNameContainingAndIdStoreNameAndIdPriceValueBetween(
+            long idUser, String categoryName, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+    Page<Product> findByFavoritesIdAndSexAndIdStoreNameAndIdPriceValueBetween(
+            long idUser, String sex, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
 }

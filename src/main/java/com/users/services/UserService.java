@@ -9,14 +9,12 @@ import com.users.model.User;
 import com.security.payload.ApiResponse;
 import com.security.payload.JwtAuthenticationResponse;
 import com.security.payload.LoginRequest;
-import com.users.model.likes.GetLike;
+import com.users.model.likes.*;
 import com.users.model.registration.ChangePassword;
 import com.users.model.registration.RegisterUser;
 import com.users.repositories.RoleRepository;
 import com.users.repositories.UserRepository;
 import com.security.JwtTokenProvider;
-import io.vavr.control.Try;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,12 +25,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -224,5 +222,27 @@ public class UserService {
     public String logout(HttpServletRequest httpServletRequest) {
         httpServletRequest.getSession().invalidate();
         return "redirect:/api/auth/";
+    }
+
+    public ResponseEntity<List<ProductLikes>> getUserLikes(HttpServletRequest httpServletRequest){
+        Long userId = (Long) httpServletRequest.getSession().getAttribute("id_user");
+        List<GetProductLikes> getProductLikesListInterface = userRepository.findLikes(userId);
+
+        List<ProductLikes> getProductLikesList = getProductLikesListInterface
+                .stream()
+                .map(gpt -> new ProductLikes(gpt.getStoreName(), gpt.getCnt()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(getProductLikesList);
+    }
+
+    public ResponseEntity<List<CategoryLikes>> getUserCategoryLikes(HttpServletRequest httpServletRequest){
+        Long userId = (Long) httpServletRequest.getSession().getAttribute("id_user");
+        List<GetCategoryLikes> getCategoryLikesListInterface = userRepository.findCategoryLikes(userId);
+
+        List<CategoryLikes> getProductLikesList = getCategoryLikesListInterface
+                .stream()
+                .map(gpt -> new CategoryLikes(gpt.getCategoryName(), gpt.getCnt()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(getProductLikesList);
     }
 }

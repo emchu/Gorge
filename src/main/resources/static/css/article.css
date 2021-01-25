@@ -34,3 +34,13 @@
     height: auto;
     width: auto;
   }
+
+.table-head {
+    background-color: #E6E6FA;
+}
+
+.tr-head {
+    font-size: 11pt;
+    font-family: "Verdana", Times, serif;
+    font-weight: normal;
+}

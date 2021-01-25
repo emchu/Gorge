@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js"></script>
+    <script src="https://kit.fontawesome.com/fc1f7fe526.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/js/login.js"></script>
+    <script type="text/javascript" src="/js/register.js"></script>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/article.css">
+    <link rel="stylesheet" href="/css/search.css">
+</head>
+
+<body>
+<div th:insert="/fragments/navbar.html :: main"></div>
+
+<div class="p-5 d-flex justify-content-center">
+    <div class="grid-center shadow bg-light login-box col-8">
+        <h5 class="modal-header"> Statystyki </h5>
+
+        <h6 class="modal-header"> Liczba polubień danych sklepów </h6>
+        <div class="row px-3">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr class="table-head">
+                    <th class="tr-head">Top</th>
+                    <th class="tr-head">Sklep</th>
+                    <th class="tr-head">Liczba polubień</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="productLikes, itemStat : *{productLikesList}" class="table-light">
+                    <td th:text="${itemStat.index + 1}"></td>
+                    <td th:text="${productLikes.storeName}"></td>
+                    <td th:text="${productLikes.likesCounter}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h6 class="modal-header"> Liczba polubień danych kategorii </h6>
+        <div class="row px-3">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr class="table-head">
+                    <th class="tr-head">Top</th>
+                    <th class="tr-head">Sklep</th>
+                    <th class="tr-head">Liczba polubień</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="categoryLikes, itemStat : *{categoryLikesList}" class="table-light">
+                    <td th:text="${itemStat.index + 1}"></td>
+                    <td th:text="${categoryLikes.categoryName}"></td>
+                    <td th:text="${categoryLikes.likesCounter}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

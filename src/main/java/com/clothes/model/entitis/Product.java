@@ -43,6 +43,10 @@ public class Product {
     @Getter @Setter
     private String desc;
 
+    @Column(name = "link", nullable = false)
+    @Getter @Setter
+    private String link;
+
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -90,12 +94,13 @@ public class Product {
     @Setter @Getter
     Set<User> favorites = new HashSet<User>();
 
-    public Product(long id, String name, String sex, String descr,
+    public Product(long id, String name, String sex, String descr, String link,
                    Price idPrice, List<Picture> pictureList, Store idStore, Category idCategory) {
         this.id = id;
         this.name = name;
         this.sex = sex;
         this.desc = descr;
+        this.link = link;
         this.idPrice = idPrice;
         this.pictureList = pictureList;
         this.idStore = idStore;
