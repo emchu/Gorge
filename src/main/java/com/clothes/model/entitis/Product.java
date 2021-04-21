@@ -1,5 +1,6 @@
 package com.clothes.model.entitis;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.users.model.User;
@@ -78,6 +79,7 @@ public class Product {
     @Getter
     private Category idCategory;
 
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_product_likes",
@@ -86,6 +88,7 @@ public class Product {
     @Setter @Getter
     Set<User> likes = new HashSet<User>();
 
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_product_favourites",

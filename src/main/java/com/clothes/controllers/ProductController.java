@@ -4,6 +4,7 @@ package com.clothes.controllers;
 import com.clothes.model.GetProduct;
 import com.clothes.model.entitis.Product;
 import com.clothes.services.ProductService;
+import com.clothes.services.RecommendedProductsService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RecommendedProductsService recommendedProductsService;
 
     @GetMapping("/api/auth/get-product-by-id")
 //    @PreAuthorize("hasRole('USER')")
@@ -41,6 +45,14 @@ public class ProductController {
                                                         @RequestParam(defaultValue = "0") String startPrice,
                                                         @RequestParam(defaultValue = "") String endPrice) {
         return productService.getAllProducts(pageNo, pageSize, sortBy, category, sex, store, startPrice, endPrice);
+    }
+
+    @GetMapping("/api/auth/test")
+    public ResponseEntity<Page<Product>> getRecommended(@NotNull HttpServletRequest httpServletRequest,
+                                                        @RequestParam(defaultValue = "0") Integer pageNo,
+                                                        @RequestParam(defaultValue = "10") Integer pageSize,
+                                                        @RequestParam(defaultValue = "id") String sortBy) {
+        return recommendedProductsService.getRecommendedProducts(httpServletRequest, pageNo, pageSize, sortBy);
     }
 
 //    http://localhost:8080/employees?pageSize=5

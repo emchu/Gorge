@@ -7,6 +7,7 @@ import com.clothes.repositories.CategoryRepository;
 import com.clothes.repositories.ProductRepository;
 import com.clothes.services.CategoryService;
 import com.clothes.services.ProductService;
+import com.clothes.services.RecommendedProductsService;
 import com.clothes.services.StoreService;
 import com.security.payload.LoginRequest;
 import com.users.model.likes.CategoryLikes;
@@ -39,6 +40,8 @@ public class SiteController {
     private CategoryRepository categoryRepository;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RecommendedProductsService recommendedProductsService;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -169,6 +172,27 @@ public class SiteController {
         model.addAttribute("stores", stores);
 
         return "favourites";
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/recommended")
+    public String recommended(Model model,
+                             HttpServletRequest httpServletRequest,
+                             @RequestParam(defaultValue = "0") Integer pageNo,
+                             @RequestParam(defaultValue = "12") Integer pageSize,
+                             @RequestParam(defaultValue = "id") String sortBy) {
+
+        model.addAttribute("pageNoVal", pageNo);
+        model.addAttribute("pageSizeVal", pageSize);
+        model.addAttribute("sortByVal", sortBy);
+
+        ResponseEntity<Page<Product>> products = recommendedProductsService
+                .getRecommendedProducts(httpServletRequest, pageNo, pageSize, sortBy);
+        Page<Product> productPage = products.getBody();
+
+        model.addAttribute("productPage", productPage);
+
+        return "recommended";
     }
 
     @PreAuthorize("hasRole('USER')")

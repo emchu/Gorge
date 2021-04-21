@@ -3,11 +3,15 @@ package com.clothes.repositories;
 import com.clothes.model.entitis.Category;
 import com.clothes.model.entitis.Product;
 import com.clothes.model.entitis.Store;
+import com.users.model.likes.GetCategoryLikes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -84,4 +88,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             long idUser, String categoryName, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
     Page<Product> findByFavoritesIdAndSexAndIdStoreNameAndIdPriceValueBetween(
             long idUser, String sex, String storeName, BigDecimal startPrice, BigDecimal endPrice, Pageable pageable);
+
+    //recommended
+    @Transactional
+    @Query(value="SELECT * FROM product " +
+            "WHERE product.id_category = :id_category " +
+            "ORDER BY RANDOM() " +
+            "LIMIT :amount",
+            nativeQuery = true)
+    List<Product> findCategoryLikes(@Param("id_category") long idCategory, @Param("amount") int amount);
+
+    @Transactional
+    @Query(value="select * " +
+            "from product " +
+            "where product.id_product not in (:listOfProductIds) " +
+            "order by RANDOM() " +
+            "limit :amount",
+            nativeQuery = true)
+    List<Product> findProductsNotInId(@Param("listOfProductIds") List<Long> listOfProductIds, @Param("amount") int amount);
+
 }
